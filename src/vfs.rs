@@ -614,7 +614,7 @@ impl WebdavDriveFileSystem {
             fileHash:slice_upload_res.clone().data.fileHash,
             accessToken:format!("{}",&self.credentials.token),
         };
-        ///Result第一次
+        ///Result循环请求3次退出
         let mut loop_index=1;
         loop {
             let result_res:SliceUploadResponse = match self.post_request(result_url.clone().to_string(), &result_req).await {
@@ -651,14 +651,7 @@ impl WebdavDriveFileSystem {
             accessToken:format!("{}",&self.credentials.token),
         };
         let call_back_url = "http://uploadapi2.stariverpan.com:18090/v2/file/callbacks";
-        // let call_back_res:CallbackResponse = match self.post_request(call_back_url.clone().to_string(), &call_back_req).await {
-        //     Ok(res)=>res.unwrap(),
-        //     Err(err)=>{
-        //         panic!("Complete文件上传失败: {:?}", err)
-        //     }
-        // };
-
-
+        //循环请求3次退出
         let mut callback_index=1;
         loop {
             debug!("Callback第{}次结果",&callback_index);
@@ -677,10 +670,7 @@ impl WebdavDriveFileSystem {
         }
 
 
-        
-
-
-
+        //经过上面的查询依然有可能得不到cid因此需要再次尝试请求创建文件,如果5次都没有得到cid再次上传吧  再次上传的话不会再进行上传的请求直接秒传
         let hash_str = &file.clone().sha1.unwrap();
         let init_file_req = UploadInitRequest{
             hash: format!("{}",hash_str),
@@ -695,7 +685,7 @@ impl WebdavDriveFileSystem {
             partList:vec![],
             accessToken: format!("{}",&self.credentials.token),
         };
-
+        //循环请求创建文件5次 如果都没有得到就退出
         let mut create_index=1;
         loop {
             debug!("请求创建文件第{}次结果",&callback_index);
@@ -706,7 +696,7 @@ impl WebdavDriveFileSystem {
                 }
             };
             let file_type = get_file_type(&file_upload_init_res.data.fileName);
-            if file_upload_init_res.data.fileCid.len()>5 || create_index>2{
+            if file_upload_init_res.data.fileCid.len()>5 {
                 let add_file_req = AddFileRequest{
                     filePath: "".to_string(),
                     dirPath: vec![],
@@ -729,14 +719,12 @@ impl WebdavDriveFileSystem {
                 };
                 break;
             }
+            if create_index>5 {
+                break;
+            }
             sleep(Duration::from_millis(4000)).await;
             create_index+=1;
         }
-
-
-      
-
-
         // debug!("上传完成，文件Cid为:{}",call_back_res.data[0].fileCid);
         Ok(())
     }
