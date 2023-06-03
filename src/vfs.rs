@@ -162,7 +162,7 @@ impl WebdavDriveFileSystem {
     }
 
     async fn create_folder(&self, parent_id:&str, folder_name: &str) -> Result<WebdavFile> {
-        //let root = WebdavFile::new_root();
+        let root = WebdavFile::new_root();
         Ok(root)
     }
 
