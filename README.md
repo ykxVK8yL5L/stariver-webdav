@@ -16,8 +16,10 @@ stariver-webdav --stariver-token='XXXXXXXXXXXXX' --auth-user='admin' --auth-pass
 ```
 2、Dokcer【推荐使用，如不使用alist-encrypt可不设置用户名和密码】
 ```
-docker run  --name="stariver-webdav" -p 10018:9867 -e STARIVER_TOKEN="XXXXXXXXXXXXX" -e WEBDAV_AUTH_USER="admin" -e WEBDAV_AUTH_PASSWORD="admin" ykxvk8yl5l/stariver-webdav:latest
+docker run  --name="stariver-webdav" -p 10020:9867 -e STARIVER_TOKEN="XXXXXXXXXXXXX" -e WEBDAV_AUTH_USER="admin" -e WEBDAV_AUTH_PASSWORD="admin" ykxvk8yl5l/stariver-webdav:latest
 ```
+
+
 
 文件上传命令:
 ```
