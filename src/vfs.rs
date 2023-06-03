@@ -182,6 +182,18 @@ impl WebdavDriveFileSystem {
     }
 
     pub async fn rename_file(&self, file_id: &str, new_name: &str) -> Result<()> {
+        // let mut params = HashMap::new();
+        // params.insert("action", "rename");
+        // params.insert("token", &self.credentials.token);
+        // params.insert("ukey", &file_id);
+        // params.insert("name", new_name);
+        // let delRes:FileResponse = match  self.post_request(TMPFILEURL.to_string(),&params).await{
+        //     Ok(res)=>res.unwrap(),
+        //     Err(err)=>{
+        //         panic!("重命名文件失败: {:?}", err)
+        //         //return Err(err);
+        //     }
+        // };
         Ok(())
     }
 
@@ -665,11 +677,11 @@ impl WebdavDriveFileSystem {
         }
 
 
+        
 
 
 
         let hash_str = &file.clone().sha1.unwrap();
-
         let init_file_req = UploadInitRequest{
             hash: format!("{}",hash_str),
             fileHash: format!("{}",hash_str),
@@ -684,40 +696,45 @@ impl WebdavDriveFileSystem {
             accessToken: format!("{}",&self.credentials.token),
         };
 
-        let file_upload_init_res:UploadInitResponse = match  self.post_request("http://uploadapi2.stariverpan.com:18090/v2/file/init".to_string(),&init_file_req).await{
-            Ok(res)=>res.unwrap(),
-            Err(err)=>{
-                panic!("初始化文件上传请求失败: {:?}", err)
-            }
-        };
-
-
-  
-        let file_type = get_file_type(&file_upload_init_res.data.fileName);
-
-        if file_upload_init_res.data.fileCid.len()>5 {
-            let add_file_req = AddFileRequest{
-                filePath: "".to_string(),
-                dirPath: vec![],
-                fileName: file_upload_init_res.data.fileName,
-                fileSize: file_upload_init_res.data.fileSize,
-                fileCid: file_upload_init_res.data.fileCid,
-                fileType: 4,
-                parentId: file.parentId.to_string(),
-                suffix: file_upload_init_res.data.fileExtension,
-                thumbnail: "".to_string(),
-                duration: 1,
-                width: "0".to_string(),
-                height: "0".to_string()
-            };
-            let add_file_res:AddFileResponse = match self.post_request("https://productapi.stariverpan.com/cmsprovider/v2.5/cloud/add-file".to_string(), &add_file_req).await{
+        let mut create_index=1;
+        loop {
+            debug!("请求创建文件第{}次结果",&callback_index);
+              let file_upload_init_res:UploadInitResponse = match  self.post_request("http://uploadapi2.stariverpan.com:18090/v2/file/init".to_string(),&init_file_req).await{
                 Ok(res)=>res.unwrap(),
                 Err(err)=>{
                     panic!("初始化文件上传请求失败: {:?}", err)
                 }
             };
+            let file_type = get_file_type(&file_upload_init_res.data.fileName);
+            if file_upload_init_res.data.fileCid.len()>5 || create_index>2{
+                let add_file_req = AddFileRequest{
+                    filePath: "".to_string(),
+                    dirPath: vec![],
+                    fileName: file_upload_init_res.data.fileName,
+                    fileSize: file_upload_init_res.data.fileSize,
+                    fileCid: file_upload_init_res.data.fileCid,
+                    fileType: 4,
+                    parentId: file.parentId.to_string(),
+                    suffix: file_upload_init_res.data.fileExtension,
+                    thumbnail: "".to_string(),
+                    duration: 1,
+                    width: "0".to_string(),
+                    height: "0".to_string()
+                };
+                let add_file_res:AddFileResponse = match self.post_request("https://productapi.stariverpan.com/cmsprovider/v2.5/cloud/add-file".to_string(), &add_file_req).await{
+                    Ok(res)=>res.unwrap(),
+                    Err(err)=>{
+                        panic!("初始化文件上传请求失败: {:?}", err)
+                    }
+                };
+                break;
+            }
+            sleep(Duration::from_millis(4000)).await;
+            create_index+=1;
         }
 
+
+      
 
 
         // debug!("上传完成，文件Cid为:{}",call_back_res.data[0].fileCid);
