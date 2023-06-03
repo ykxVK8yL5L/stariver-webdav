@@ -7,7 +7,7 @@ curl -T "文件名" "http://127.0.0.1:9867/"  --header 'OC-Checksum:sha1:文件�
 
 Docker主页: https://hub.docker.com/r/ykxvk8yl5l/stariver-webdav   
 
-# 使用方法 【token可通过tmp.link后台获取】
+# 使用方法 【token可通过后台获取】
 1、命令行
 ```
 stariver-webdav --stariver-token='XXXXXXXXXXXXX' --auth-user='admin' --auth-password='admin' 
