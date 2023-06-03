@@ -792,9 +792,6 @@ impl DavFileSystem for WebdavDriveFileSystem {
                 }
             });
 
-            println!("fuck create file sha1 is {}",sha1.clone().unwrap());
-
-
             let dav_file = if let Some(mut file) = self.get_file(path.clone()).await? {
                 if options.write && options.create_new {
                     return Err(FsError::Exists);
