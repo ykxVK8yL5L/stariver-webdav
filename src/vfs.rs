@@ -145,7 +145,7 @@ impl WebdavDriveFileSystem {
                 }
                 //let res = res.json::<U>().await?;
                 let res = res.text().await?;
-                println!("{}: {}", url, res);
+                //println!("{}: {}", url, res);
                 let res = serde_json::from_str(&res)?;
                 // let res_obj = res.json::<U>().await?;
                 Ok(Some(res))
