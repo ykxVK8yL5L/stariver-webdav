@@ -626,7 +626,7 @@ impl WebdavDriveFileSystem {
             if result_res.data.uploadState==1 || loop_index>2{
                 break;
             }
-            sleep(Duration::from_millis(4000)).await;
+            sleep(Duration::from_millis(6000)).await;
             loop_index+=1;
         }
 
@@ -722,7 +722,7 @@ impl WebdavDriveFileSystem {
             if create_index>5 {
                 break;
             }
-            sleep(Duration::from_millis(4000)).await;
+            sleep(Duration::from_millis(10000)).await;
             create_index+=1;
         }
         // debug!("上传完成，文件Cid为:{}",call_back_res.data[0].fileCid);
