@@ -219,7 +219,7 @@ impl WebdavDriveFileSystem {
                 }
             };
             file_list.extend(file_list_response.data.data);
-            if file_list_response.data.totalPage == page_num {
+            if file_list_response.data.totalPage == page_num || file_list_response.data.totalPage==0{
                 break;
             }
             page_num+=1;
