@@ -42,6 +42,7 @@ type InitResponse struct {
 func main() {
 	token := flag.String("token", "", "登陆token")
 	file_path := flag.String("path", "", "上传文件路径")
+	parentId := flag.String("parentId", "", "上传到的目录ID")
 	flag.Parse()
 
 	fileInfo, err := os.Stat(*file_path)
@@ -62,7 +63,7 @@ func main() {
 	init_url := "http://uploadapi2.stariverpan.com:18090/v2/file/init"
 	method := "POST"
 
-	payload := strings.NewReader(fmt.Sprintf(`{"hash":"%s","fileHash":"%s","fileName":"%s","fileSize":%d,"fileCid":"","fileState":0,"parentId":"0","chunkSize":0,"suffix":"","partList":[],"accessToken":"%s"}`,fileHash,fileHash,fileName,fileSize,*token))
+	payload := strings.NewReader(fmt.Sprintf(`{"hash":"%s","fileHash":"%s","fileName":"%s","fileSize":%d,"fileCid":"","fileState":0,"parentId":"%s","chunkSize":0,"suffix":"","partList":[],"accessToken":"%s"}`,fileHash,fileHash,fileName,fileSize,*parentId,*token))
 	client := &http.Client {
 	}
 	req, err := http.NewRequest(method, init_url, payload)
@@ -99,7 +100,7 @@ func main() {
 	if (len(init_res.Data.FileCid) != 0){
 		add_url := "https://productapi.stariverpan.com/cmsprovider/v2.5/cloud/add-file"
 		add_method := "POST"
-		add_payload := strings.NewReader(fmt.Sprintf(`{"filePath":"","dirPath":[],"fileName":"%s","fileSize":%d,"fileCid":"%s","fileType":4,"parentId":"0","suffix":"file_extension","thumbnail":"","duration":1,"width":"0","height":"0"}`,fileName,fileSize,init_res.Data.FileCid,file_extension))
+		add_payload := strings.NewReader(fmt.Sprintf(`{"filePath":"","dirPath":[],"fileName":"%s","fileSize":%d,"fileCid":"%s","fileType":4,"parentId":"%s","suffix":"file_extension","thumbnail":"","duration":1,"width":"0","height":"0"}`,fileName,fileSize,init_res.Data.FileCid,file_extension,*parentId))
 		addd_req, err := http.NewRequest(add_method, add_url, add_payload)
 
 		if err != nil {
@@ -204,7 +205,7 @@ func main() {
 	slice_url := fmt.Sprintf("%s/v2/file/chunk/splice",init_res.Data.UploadEp)
 	method = "POST"
 
-	payload = strings.NewReader(fmt.Sprintf(`{"appEnv":"prod","fileName":"%s","fileHash":"%s","accessToken":"%s","passThrough":"{\"dirPath\":[],\"duration\":1,\"parentId\":\"0\",\"fileType\":%d,\"width\":\"0\",\"height\":\"0\"}","noCallback":false}`,fileName,fileHash,*token,fileType))
+	payload = strings.NewReader(fmt.Sprintf(`{"appEnv":"prod","fileName":"%s","fileHash":"%s","accessToken":"%s","passThrough":"{\"dirPath\":[],\"duration\":1,\"parentId\":\"%s\",\"fileType\":%d,\"width\":\"0\",\"height\":\"0\"}","noCallback":false}`,fileName,fileHash,*token,*parentId,fileType))
 	fmt.Println(payload)
 
 
