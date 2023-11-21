@@ -1,3 +1,7 @@
+# 官方收费加算法更新此项目已废 仅供参考
+
+
+
 [如需使用alist-encrypt需要设置webdav的用户名和密码，详情见命令行]
 # webdav服务 目前支持列文件及通过curl上传【需要带checksum的header否则会报错】  
 例子
